@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: guia-infnet-app-metadata
+  labels:
+    app: guia-infnet-label  
+
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: guia-infnet-label
+  template:
+    metadata:
+      labels:
+        app: guia-infnet-label
+    spec:
+      containers:
+        - name: guia-infnet-app-container
+          image: oliveirarenan1/guia-infnet:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: HOSTNAME
+              value: 0.0.0.0
+            - name: PORT
+              value: "3000"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+---      
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: guia-infnet-app-service
+  labels:
+    app: guia-infnet-label
+spec:
+  type: NodePort
+  selector:
+    app: guia-infnet-label
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+      nodePort: 30080

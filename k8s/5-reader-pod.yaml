@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pvc-reader
+spec:
+  restartPolicy: Never
+  containers:
+    - name: reader
+      image: busybox:latest
+      command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Listando arquivos em /data:"
+          ls -la /data
+          echo "Conteúdo do arquivo registro.txt:"
+          cat /data/registro.txt
+          sleep 3600
+      volumeMounts:
+        - name: guia-volume
+          mountPath: /data
+  volumes:
+    - name: guia-volume
+      persistentVolumeClaim:
+        claimName: guia-infnet-pvc

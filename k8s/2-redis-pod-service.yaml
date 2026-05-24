@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: redis
+  labels:
+    app: redis-label
+spec:
+  containers:
+    - name: redis
+      image: redis:7-alpine
+      ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-service
+  labels:
+    app: redis-label
+spec:
+  type: ClusterIP
+  selector:
+    app: redis-label
+  ports:
+    - protocol: TCP
+      port: 6379
+      targetPort: 6379
